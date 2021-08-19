@@ -1,15 +1,15 @@
 <template>
   <div class="desktop">
-    <item v-for="item, k in desktopFiles" :key="k" :type="item.type"></item>
+    <file-item v-for="item, k in desktopFiles" :key="k" :type="item.type"></file-item>
   </div>
 </template>
 
 <script>
-import item from './components/item.vue'
+import fileItem from './components/FileItem'
 // import { getDesktop } from '@/api/desktop';
 
 export default {
-  components: { item },
+  components: { fileItem },
   name: "Desktop",
   data() {
     return {
@@ -77,10 +77,5 @@ export default {
     flex-direction: column;
     flex-wrap: wrap;
     align-content: flex-start;
-
-    .item {
-      width: 100px;
-      height: 120px;
-    }
   }
 </style>

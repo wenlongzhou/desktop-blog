@@ -1,5 +1,5 @@
 import request from '@/utils/request';
 
-export function getDesktop () {
+export function fileList () {
   return request('', {});
 }

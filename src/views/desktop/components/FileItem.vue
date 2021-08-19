@@ -1,16 +1,16 @@
 <template>
-  <div class="item">
+  <div class="file-item">
     <folder v-if="isFolderType"></folder>
     <file v-if="isFileType"></file>
   </div>
 </template>
 
 <script>
-import Folder from "./folder";
-import File from "./file";
+import Folder from "./Folder";
+import File from "./File";
 
 export default {
-  name: "Item",
+  name: "fileItem",
   components: { Folder, File },
   props: {
     type: String,
@@ -32,5 +32,4 @@ export default {
 </script>
 
 <style>
-
 </style>
