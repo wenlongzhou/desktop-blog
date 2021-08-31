@@ -1,0 +1,148 @@
+<template>
+  <div class="dock">
+    <div class="content">
+      <div class="item" @click="changeStatus('folder')">
+        <img src="../assets/img/folder.png" alt="">
+        <i class="iconfont" :class="[folderStatus]">&#xec7b;</i>
+      </div>
+      <div class="item"><img src="../assets/img/safari.png" alt=""></div>
+      <div class="item"><img src="../assets/img/photo.png" alt=""></div>
+      <div class="item"><img src="../assets/img/note.png" alt=""></div>
+      <div class="item"><img src="../assets/img/terminal.png" alt=""></div>
+      <div class="item"><img src="../assets/img/calendar.png" alt=""></div>
+      <div class="item"><img src="../assets/img/compute.png" alt=""></div>
+      <div class="gap"></div>
+      <div class="item"><img src="../assets/img/Recycle.png" alt=""></div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Dock",
+  data() {
+    return {
+      desktopFiles: {
+        type: 'folder',
+        name: '桌面',
+        child: [
+            {
+              type: 'folder',
+              name: '博客',
+              child: [
+              {
+                type: 'file',
+                name: '简历',
+              },
+              {
+                type: 'file',
+                name: '简历',
+              },
+              {
+                type: 'file',
+                name: '简历',
+              },
+            ]
+          },
+          {
+            type: 'folder',
+            name: '这是什么',
+          },
+          {
+            type: 'folder',
+            name: '你猜',
+          },
+          {
+            type: 'file',
+            name: '简历',
+          },
+        ]
+      }
+    }
+  },
+  methods: {
+    changeStatus(type) {
+      if (!this.$store.state.dockStatus[type] || this.$store.state.dockStatus[type] == 'close') {
+        this.$store.commit('openWindows', this.desktopFiles);
+      } else {
+        this.$store.commit('shrinkWindow', {
+          uuid: 0,
+          type: type,
+        });
+      }
+    }
+  },
+  computed: {
+    folderStatus() {
+      // this.folderStatus1 = ('folder' in this.$store.state.dockStatus ? this.$store.state.dockStatus['folder'] : 'close');
+      return 'folder' in this.$store.state.dockStatus ? this.$store.state.dockStatus['folder'] : 'close';
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+  .dock {
+    @dock-height: 60px;
+    width: 100%;
+    height: @dock-height;
+    position: fixed;
+    bottom: 5px;
+
+    .content {
+      @item-width: 44px;
+      @padding: 8px;
+
+      width: (@item-width + @padding) * 8;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 @padding;
+      background-color: rgba(255, 255, 255, .4);
+      border-radius: 15px;
+      box-shadow: 0px 0px 30px rgba(39, 39, 39, 0.4);
+      display: flex;
+      overflow: hidden;
+      justify-content: space-around;
+      align-items: center;
+
+      .item {
+        width: @item-width;
+        height: @item-width;
+        line-height: 1px;
+
+
+        img {
+          width: @item-width;
+        }
+
+        i {
+          font-size: 13px;
+          width: 13px;
+          display: block;
+          margin: 2px auto 0;
+          display: none;
+        }
+
+        i.active {
+          display: block;
+          color: rgb(0, 211, 11);
+        }
+        i.close {
+          display: none;
+        }
+        i.back {
+          display: block;
+          color: rgba(0, 0, 0, 0.733);
+        }
+      }
+
+      .gap {
+        width: 2px;
+        height: 40px;
+        border-radius: 1px;
+        margin-left: 3px;
+        background-color: rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+</style>

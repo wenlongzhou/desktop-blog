@@ -7,7 +7,7 @@ export default new VueRouter({
   routes: [
     {
       path: '/',
-      component: () => import('@/views/desktop'),
+      component: () => import('@/views/Desktop'),
     },
     // {
     //   path: '/login',
