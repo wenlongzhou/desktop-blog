@@ -46,6 +46,7 @@ export default {
 
 <style lang="less" scoped>
   @toolbar-height: 50px;
+  @foot-height: 20px;
   @radius: 10px;
 
   .markdown {
@@ -69,7 +70,7 @@ export default {
       }
 
       .content {
-        height: calc(100% - @toolbar-height);
+        height: calc(100% - @toolbar-height - @foot-height);
         box-sizing: border-box;
         padding: 50px;
         background-color: #fff;
@@ -92,7 +93,7 @@ export default {
       }
 
       .foot {
-        height: 20px;
+        height: @foot-height;
         border-bottom-left-radius:@radius;
         border-bottom-right-radius:@radius;
         background-color: #fff;
