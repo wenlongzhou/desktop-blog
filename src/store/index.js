@@ -36,15 +36,21 @@ export default new Vuex.Store({
         "z-index": state.zIndex + 1,
         transform: 'scale(0)',
       };
-      if (item.type == 'folder') {
+      if (item.type === 'folder') {
+        this.commit('changeDockStatus', {
+          type: item.type,
+          status: "active"
+        });
+      }
+      if (item.type === 'file') {
         this.commit('changeDockStatus', {
           type: item.type,
           status: "active"
         });
       }
 
-      state.windowsCount[item.type] = (item.type in state.windowsCount) ? state.windowsCount[item.type] + 1 : (state.windowsCount[item.type] = 1);
-      state.windowsShowCount[item.type] = (item.type in state.windowsShowCount) ? state.windowsShowCount[item.type] + 1 : (state.windowsShowCount[item.type] = 1);
+      this.commit('windowsCount', { type: item.type, num: 1 });
+      this.commit('windowsShowCount', { type: item.type, num: 1 });
       state.windows.push(obj);
       //打开动画
       setTimeout(function() {
@@ -64,8 +70,8 @@ export default new Vuex.Store({
           obj1.transform = 'scale(0)';
           state.windows[i].windowStyle = obj1;
 
-          state.windowsCount[windowsType]--;
-          state.windowsShowCount[windowsType]--;
+          this.commit('windowsCount', { type: windowsType, num: -1 });
+          this.commit('windowsShowCount', { type: windowsType, num: -1 });
           setTimeout(() => {
             state.windows.splice(i, 1);
           }, 500);
@@ -93,7 +99,8 @@ export default new Vuex.Store({
           let temp = clone(state.windows[i]);
 
           if (status == 'active' && !temp.windowStyle.width) {
-            state.windowsShowCount[type]++;
+            this.commit('windowsShowCount', { type: type, num: 1 });
+
 
             temp.windowStyle.width = temp.windowTempStyle.width;
             temp.windowStyle.height = temp.windowTempStyle.height;
@@ -101,7 +108,7 @@ export default new Vuex.Store({
             temp.windowStyle.left = temp.windowTempStyle.left;
             temp.windowStyle.transform = temp.windowTempStyle.transform;
           } else if (status == 'back' && temp.windowStyle.width) {
-            state.windowsShowCount[type]--;
+            this.commit('windowsShowCount', { type: type, num: -1 });
 
             temp.windowTempStyle = {
               width: temp.windowStyle.width,
@@ -128,6 +135,37 @@ export default new Vuex.Store({
           status: status,
         });
       }
+    },
+    changeWindowStyle(state, data) {
+      let { index, style } = data;
+
+      let temp = clone(state.windows[index].windowStyle);
+      for (let i in temp) {
+        if (!(i in style)) style[i] = temp[i];
+      }
+      state.windows[index].windowStyle = style;
+    },
+    windowsCount(state, data) {
+      let { type, num } = data;
+      let temp = clone(state.windowsCount);
+
+      if (type in state.windowsCount) {
+        temp[type] = temp[type] + num;
+      } else {
+        temp[type] = 1;
+      }
+      state.windowsCount = temp;
+    },
+    windowsShowCount(state, data) {
+      let { type, num } = data;
+      let temp = clone(state.windowsShowCount);
+
+      if (type in state.windowsShowCount) {
+        temp[type] = temp[type] + num;
+      } else {
+        temp[type] = 1;
+      }
+      state.windowsShowCount = temp;
     },
 
     changeDockStatus(state, data) {

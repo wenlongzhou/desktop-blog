@@ -1,10 +1,10 @@
 <template>
   <div class="file">
-    <div class="file-default" v-if="folderIconLayout" v-on:dblclick="openFile">
+    <div class="file-default" v-if="folderIconLayout">
       <div>{{ item.name }}</div>
     </div>
 
-    <div class="file-list" v-if="folderListLayout" v-on:dblclick="openFile">
+    <div class="file-list" v-if="folderListLayout">
       <div>{{ item.name }}</div>
     </div>
   </div>
@@ -25,9 +25,6 @@ export default {
     },
   },
   methods: {
-    openFile() {
-      
-    }
   }
 }
 </script>

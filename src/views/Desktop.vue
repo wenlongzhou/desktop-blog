@@ -1,9 +1,9 @@
 <template>
   <div class="desktop">
     <top-bar></top-bar>
-    <div class="main">
+    <div class="main" @mousemove="mousemove" @mouseup="mouseup" ref="main">
       <file-item v-for="item, k in desktopFiles" :key="k" :type="item.type" :item="item"></file-item>
-      <windows v-for="item, index in windows" :key="item.uuid" :item="item" :index="index"></windows>
+      <windows v-for="item, index in windows" :key="item.uuid" :item="item" :index="index" @windowMousedown="windowMousedown(index)" @toolbarMousedown="toolbarMousedown($event, index)"></windows>
     </div>
     <dock></dock>
   </div>
@@ -22,36 +22,42 @@ export default {
   data() {
     return {
       windowNum: 0,
+      windowMove: false,
+      windowMoveIndex: 0,
       desktopFiles: [
         {
           type: 'folder',
-          name: '博客',
+          name: '文章',
           child: [
             {
               type: 'file',
-              name: '简历',
+               url: 'https://www.nazzzz.cn/test.md',
+              name: 'test',
             },
             {
               type: 'file',
-              name: '简历',
+              url: 'https://www.nazzzz.cn/test.md',
+              name: 'test',
             },
             {
               type: 'file',
-              name: '简历',
+              url: 'https://www.nazzzz.cn/test.md',     
+              name: 'test',
             },
           ]
         },
         {
           type: 'folder',
-          name: '这是什么',
+          name: '照片',
         },
         {
           type: 'folder',
-          name: '你猜',
+          name: 'demo',
         },
         {
           type: 'file',
-          name: '简历',
+          url: 'https://www.nazzzz.cn/test.md',
+          name: 'test',
         },
       ],
     }
@@ -66,7 +72,52 @@ export default {
     },
   },
   methods: {
+    toolbarMousedown(e) {
+      this.windowMove = true;
+      this.deltaLeft = e.clientX-e.currentTarget.parentElement.parentElement.parentElement.offsetLeft;
+      this.deltaTop = e.clientY-e.currentTarget.parentElement.parentElement.parentElement.offsetTop;
+    },
+    windowMousedown(index) {
+      this.windowMoveIndex = index;
+      this.$store.commit('zIndexIncr');
+      this.$store.commit('changeWindowStyle', {
+        index: index,
+        style: {
+          'transition-property': 'none',
+          'z-index': this.$store.state.zIndex + 1,
+        }
+      })
+    },
+    mousemove(e) {
+      if (this.windowMove)  {
+        const cx = e.clientX;
+        const cy = e.clientY;
 
+        /** 相减即可得到相对于父元素移动的位置 */
+        let dx = cx - this.deltaLeft
+        let dy = cy - this.deltaTop
+
+        this.$store.commit('changeWindowStyle', {
+          index: this.windowMoveIndex,
+          style: {
+            'left': dx + 'px',
+            'top': dy + 'px'
+          }
+        })
+      }
+    },
+    mouseup() {
+      if (this.windowMove)  {
+        this.windowMove = false;
+      }
+
+      this.$store.commit('changeWindowStyle', {
+        index: this.windowMoveIndex,
+        style: {
+          'transition-property': 'all'
+        }
+      })
+    },
   }
 }
 </script>

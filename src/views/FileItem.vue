@@ -1,6 +1,6 @@
 <template>
-  <div class="file-item">
-    <folder v-if="type == 'folder'" :item="item" @dblclick="openFile(item)"></folder>
+  <div class="file-item" @dblclick="openFile(item)">
+    <folder v-if="type == 'folder'" :item="item"></folder>
     <file v-if="type == 'file'" :item="item"></file>
   </div>
 </template>
@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     openFile(item) {
+      console.log('a');
       this.$store.commit('openWindows', item);
     },
   },

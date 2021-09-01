@@ -1,7 +1,7 @@
 <template>
-  <div class="insideFolder" v-if="desktopFiles" :style="insideFolderStyle" @mousedown="insideFolderMousedown">
+  <div class="insideFolder" v-if="desktopFiles">
     <div class="left">
-      <div class="toolbar" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
+      <div class="toolbar" @mousedown="mousedown">
         <span @click="$emit('close')"><i class="iconfont" style="font-size: 13px; color: #f95a5a">&#xe62c;</i></span>
         <span @click="$emit('shrink')"><i class="iconfont" style="font-size: 13px; color: rgb(255 177 53)">&#xe62c;</i></span>
         <span ><i class="iconfont" style="font-size: 13px; color: rgb(69 191 69)">&#xe62c;</i></span>
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="right">
-      <div class="toolbar" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup">
+      <div class="toolbar" @mousedown="mousedown">
         <div>
           <span><i class="iconfont" style="font-size: 13px">&#xe635;</i></span>
           <span><i class="iconfont" style="font-size: 13px; transform: rotate(180deg); display: inline-block;">&#xe635;</i></span>
@@ -66,34 +66,6 @@ export default {
     };
   },
   methods: {
-    insideFolderMousedown() {
-      this.insideFolderStyle['z-index'] = this.$store.state.zIndex + 1;
-      this.$store.commit('zIndexIncr');
-    },
-    mousedown(e) {
-      let parent = e.currentTarget.parentElement.parentElement;
-      this.deltaLeft = e.clientX-parent.offsetLeft;
-      this.deltaTop = e.clientY-parent.offsetTop;
-      this.move = true;
-      this.insideFolderStyle['transition-property'] = 'none';
-    },
-    mousemove(e) {
-      if (this.move) {
-        const cx = e.clientX;
-        const cy = e.clientY;
-
-        /** 相减即可得到相对于父元素移动的位置 */
-        let dx = cx - this.deltaLeft
-        let dy = cy - this.deltaTop
-
-        this.insideFolderStyle.left = dx + 'px';
-        this.insideFolderStyle.top = dy + 'px';
-      }
-    },
-    mouseup() {
-      this.move = false;
-      this.insideFolderStyle['transition-property'] = 'all';
-    },
     clickMenu(index) {
       for (let i = 0; i < 5; i++) {
         let aa = 'menuClass' + i;
@@ -103,16 +75,14 @@ export default {
       let bb = 'menuClass' + index;
       this[bb] = true;
     },
+    mousedown(e) {
+      this.$emit('toolbarMousedown', e);
+    }
   },
   created() {
     this.open = this.isOpen;
     this.$store.commit('zIndexIncr');
     if (this.content.name == '桌面') this.menuClass0 = true;
-  },
-  computed: {
-    insideFolderStyle() {
-      return this.$store.state.windows[this.index].windowStyle;
-    }
   }
 };
 </script>
@@ -122,13 +92,9 @@ export default {
 @toolbar-height: 50px;
 
 .insideFolder {
-  border-radius: @radius;
-  position: fixed;
   display: flex;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  transition-property: all;
-  transition-duration: .4s;
-  transition-timing-function: ease-in-out;
+  width: 100%;
+  height: 100%;
 
   .left {
     width: 200px;

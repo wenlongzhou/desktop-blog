@@ -5,6 +5,10 @@
         <img src="../assets/img/folder.png" alt="">
         <i class="iconfont" :class="[folderStatus]">&#xec7b;</i>
       </div>
+      <div class="item" @click="changeStatus('file')" v-if="fileShow">
+        <img src="../assets/img/doc.png" alt="">
+        <i class="iconfont" :class="[fileStatus]">&#xec7b;</i>
+      </div>
       <div class="item"><img src="../assets/img/safari.png" alt=""></div>
       <div class="item"><img src="../assets/img/photo.png" alt=""></div>
       <div class="item"><img src="../assets/img/note.png" alt=""></div>
@@ -22,48 +26,39 @@ export default {
   name: "Dock",
   data() {
     return {
-      desktopFiles: {
+      desktopFiles:{
         type: 'folder',
-        name: '桌面',
+        name: '文章',
         child: [
-            {
-              type: 'folder',
-              name: '博客',
-              child: [
-              {
-                type: 'file',
-                name: '简历',
-              },
-              {
-                type: 'file',
-                name: '简历',
-              },
-              {
-                type: 'file',
-                name: '简历',
-              },
-            ]
-          },
           {
-            type: 'folder',
-            name: '这是什么',
-          },
-          {
-            type: 'folder',
-            name: '你猜',
+            type: 'file',
+              url: 'https://www.nazzzz.cn/test.md',
+            name: 'test',
           },
           {
             type: 'file',
-            name: '简历',
+            url: 'https://www.nazzzz.cn/test.md',
+            name: 'test',
+          },
+          {
+            type: 'file',
+            url: 'https://www.nazzzz.cn/test.md',     
+            name: 'test',
           },
         ]
-      }
+      },
     }
   },
   methods: {
     changeStatus(type) {
       if (!this.$store.state.dockStatus[type] || this.$store.state.dockStatus[type] == 'close') {
-        this.$store.commit('openWindows', this.desktopFiles);
+        if (type == 'folder') {
+          this.$store.commit('openWindows', this.desktopFiles);
+        } else {
+          this.$store.commit('openWindows', {
+            type: type
+          });
+        }
       } else {
         this.$store.commit('shrinkWindow', {
           uuid: 0,
@@ -74,9 +69,15 @@ export default {
   },
   computed: {
     folderStatus() {
-      // this.folderStatus1 = ('folder' in this.$store.state.dockStatus ? this.$store.state.dockStatus['folder'] : 'close');
       return 'folder' in this.$store.state.dockStatus ? this.$store.state.dockStatus['folder'] : 'close';
-    }
+    },
+    fileShow() {
+      console.log(this.$store.state.windowsCount['file']);
+      return 'file' in this.$store.state.windowsCount ? this.$store.state.windowsCount['file'] : 0;
+    },
+    fileStatus() {
+      return 'file' in this.$store.state.dockStatus ? this.$store.state.dockStatus['file'] : 'close';
+    },
   }
 }
 </script>
