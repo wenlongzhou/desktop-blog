@@ -1,5 +1,5 @@
 <template>
-  <div class="file-item" @dblclick="openFile(item)">
+  <div class="file-item" @dblclick="openFile(item)" @mousedown.stop="">
     <folder v-if="type == 'folder'" :item="item"></folder>
     <file v-if="type == 'file'" :item="item"></file>
   </div>

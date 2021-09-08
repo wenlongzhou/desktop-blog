@@ -48,7 +48,7 @@ export default {
     border-radius: @radius;
     position: fixed;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    transition-property: all;
+    transition-property: 'transform,top,left,width,height';
     transition-duration: .4s;
     transition-timing-function: ease-in-out;
   }

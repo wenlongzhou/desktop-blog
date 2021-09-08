@@ -3,7 +3,7 @@
     <top-bar></top-bar>
     <div class="main" @mousemove="mousemove" @mouseup="mouseup" ref="main">
       <file-item v-for="item, k in desktopFiles" :key="k" :type="item.type" :item="item"></file-item>
-      <windows v-for="item, index in windows" :key="item.uuid" :item="item" :index="index" @windowMousedown="windowMousedown(index)" @toolbarMousedown="toolbarMousedown($event, index)"></windows>
+      <windows v-for="item, index in windows" :key="item.uuid" :item="item" :index="index" @windowMousedown="windowMousedown(index, item)" @toolbarMousedown="toolbarMousedown($event, index)"></windows>
     </div>
     <dock></dock>
   </div>
@@ -23,7 +23,7 @@ export default {
     return {
       windowNum: 0,
       windowMove: false,
-      windowMoveIndex: 0,
+      windowIndex: undefined,
       desktopFiles: [
         {
           type: 'folder',
@@ -72,19 +72,25 @@ export default {
     },
   },
   methods: {
-    toolbarMousedown(e) {
+    toolbarMousedown(e, index) {
       this.windowMove = true;
       this.deltaLeft = e.clientX-e.currentTarget.parentElement.parentElement.parentElement.offsetLeft;
       this.deltaTop = e.clientY-e.currentTarget.parentElement.parentElement.parentElement.offsetTop;
-    },
-    windowMousedown(index) {
-      this.windowMoveIndex = index;
-      this.$store.commit('zIndexIncr');
       this.$store.commit('changeWindowStyle', {
         index: index,
         style: {
           'transition-property': 'none',
-          'z-index': this.$store.state.zIndex + 1,
+        }
+      })
+    },
+    windowMousedown(index, item) {
+      this.windowIndex = index;
+      this.$store.commit('zIndexIncr');
+      this.$store.commit('windowsShowType', item.type);
+      this.$store.commit('changeWindowStyle', {
+        index: index,
+        style: {
+          'z-index': this.$store.state.zIndex,
         }
       })
     },
@@ -98,7 +104,7 @@ export default {
         let dy = cy - this.deltaTop
 
         this.$store.commit('changeWindowStyle', {
-          index: this.windowMoveIndex,
+          index: this.windowIndex,
           style: {
             'left': dx + 'px',
             'top': dy + 'px'
@@ -107,16 +113,18 @@ export default {
       }
     },
     mouseup() {
-      if (this.windowMove)  {
-        this.windowMove = false;
-      }
+      if (this.windowMove || this.windowIndex !== undefined)  {
+        console.log('aaaa');
+        this.$store.commit('changeWindowStyle', {
+          index: this.windowIndex,
+          style: {
+            'transition-property': 'transform,top,left,width,height'
+          }
+        })
 
-      this.$store.commit('changeWindowStyle', {
-        index: this.windowMoveIndex,
-        style: {
-          'transition-property': 'all'
-        }
-      })
+        this.windowMove = false;
+        this.windowIndex = undefined;
+      }
     },
   }
 }

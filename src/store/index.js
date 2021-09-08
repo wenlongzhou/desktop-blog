@@ -11,6 +11,7 @@ export default new Vuex.Store({
     windows: [],
     windowsCount: {},
     windowsShowCount: {},
+    windowsShowType: '', //最上层的窗口类型
     dockStatus: {},
     windowFlag: -1, //窗口产生的方向
   },
@@ -49,9 +50,11 @@ export default new Vuex.Store({
         });
       }
 
+      this.commit('zIndexIncr');
       this.commit('windowsCount', { type: item.type, num: 1 });
       this.commit('windowsShowCount', { type: item.type, num: 1 });
       state.windows.push(obj);
+      state.windowsShowType = item.type;
       //打开动画
       setTimeout(function() {
         let obj1 = clone(state.windows[state.windows.length - 1].windowStyle);
@@ -77,7 +80,7 @@ export default new Vuex.Store({
           }, 500);
         }
       }
-      if (state.windowsCount[windowsType] === 0) {
+      if (!(windowsType in state.windowsCount)) {
         this.commit('changeDockStatus', {
           type: windowsType,
           status: "close"
@@ -91,6 +94,37 @@ export default new Vuex.Store({
       if (state.dockStatus[type] == 'back') {
         status = 'active';
       } else if (state.dockStatus[type] == 'active') {
+
+        //如果不是最前面，先放到最前面，然后最小化
+        let windowsShow = [];
+        if (state.windowsShowType !== type && Object.keys(state.windowsShowCount).length > 1) {
+          state.windowsShowType = type;
+          for (let i = 0; i < state.windows.length; i++) {
+            if (state.windows[i].type == type) {
+              windowsShow.push({
+                index: i,
+                'z-index': state.windows[i].windowStyle['z-index'],
+              });
+            }
+          }
+          if (windowsShow.length) {
+            windowsShow.sort(function(a, b) {
+              return (a['z-index'] - b['z-index']);
+            });
+            for (let i = 0; i < windowsShow.length; i++) {
+              this.commit('zIndexIncr');
+              this.commit('changeWindowStyle', {
+                index: windowsShow[i].index,
+                style: {
+                  'z-index': state.zIndex
+                }
+              });
+            }
+          }
+
+          return;
+        }
+
         status = 'back';
       }
       
@@ -100,7 +134,6 @@ export default new Vuex.Store({
 
           if (status == 'active' && !temp.windowStyle.width) {
             this.commit('windowsShowCount', { type: type, num: 1 });
-
 
             temp.windowStyle.width = temp.windowTempStyle.width;
             temp.windowStyle.height = temp.windowTempStyle.height;
@@ -129,12 +162,10 @@ export default new Vuex.Store({
         }
       }
 
-      if (status == 'active' || state.windowsShowCount[type] < 1) {
-        this.commit('changeDockStatus', {
-          type: type,
-          status: status,
-        });
-      }
+      this.commit('changeDockStatus', {
+        type: type,
+        status: status,
+      });
     },
     changeWindowStyle(state, data) {
       let { index, style } = data;
@@ -151,6 +182,7 @@ export default new Vuex.Store({
 
       if (type in state.windowsCount) {
         temp[type] = temp[type] + num;
+        if (temp[type] === 0) delete temp[type];
       } else {
         temp[type] = 1;
       }
@@ -162,10 +194,14 @@ export default new Vuex.Store({
 
       if (type in state.windowsShowCount) {
         temp[type] = temp[type] + num;
+        if (temp[type] === 0) delete temp[type];
       } else {
         temp[type] = 1;
       }
       state.windowsShowCount = temp;
+    },
+    windowsShowType(state, type) {
+      state.windowsShowType = type;
     },
 
     changeDockStatus(state, data) {
