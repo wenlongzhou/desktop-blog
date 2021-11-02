@@ -49,7 +49,7 @@ export default {
   .window {
     border-radius: @radius;
     position: fixed;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
     transition-property: 'transform,top,left,width,height';
     transition-duration: .4s;
     transition-timing-function: ease-in-out;
