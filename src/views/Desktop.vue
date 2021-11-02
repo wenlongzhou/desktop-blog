@@ -2,22 +2,22 @@
   <div class="desktop">
     <top-bar></top-bar>
     <div class="main" @mousemove="mousemove" @mouseup="mouseup" ref="main">
-      <file-item v-for="item, k in desktopFiles" :key="k" :type="item.type" :item="item"></file-item>
-      <windows v-for="item, index in windows" :key="item.uuid" :item="item" :index="index" @windowMousedown="windowMousedown(index, item)" @toolbarMousedown="toolbarMousedown($event, index)"></windows>
+      <DeskIcon v-for="item, k in desktopFiles" :key="k" :type="item.type" :item="item"></DeskIcon>
+      <Window v-for="item, index in windows" :key="item.uuid" :item="item" :index="index" @windowMousedown="windowMousedown(index, item)" @toolbarMousedown="toolbarMousedown($event, index)"></Window>
     </div>
     <dock></dock>
   </div>
 </template>
 
 <script>
-import FileItem from './FileItem'
+import DeskIcon from './DeskIcon'
 import TopBar from './TopBar'
 import Dock from './Dock'
-import Windows from './Windows'
+import Window from './Window'
 // import { getDesktop } from '@/api/desktop';
 
 export default {
-  components: { FileItem, TopBar, Dock, Windows },
+  components: { DeskIcon, TopBar, Dock, Window },
   name: "Desktop",
   data() {
     return {
@@ -56,6 +56,11 @@ export default {
         },
         {
           type: 'file',
+          url: 'https://www.nazzzz.cn/test.md',
+          name: 'test',
+        },
+        {
+          type: 'web',
           url: 'https://www.nazzzz.cn/test.md',
           name: 'test',
         },
@@ -146,8 +151,8 @@ export default {
       align-content: flex-start;
       width: 100%;
       height: calc(100% - 0px);
-      
-      .file-item {
+
+      .deskIcon {
         color: white;
       }
     }

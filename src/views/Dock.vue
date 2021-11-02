@@ -3,13 +3,16 @@
     <div class="content">
       <div class="item" @click="changeStatus('folder')">
         <img src="../assets/img/folder.png" alt="">
-        <i class="iconfont" :class="[folderStatus]">&#xec7b;</i>
+        <i class="iconfont" :class="[folderStatus]" style="">&#xec7b;</i>
       </div>
       <div class="item" @click="changeStatus('file')" v-if="fileShow">
         <img src="../assets/img/doc.png" alt="">
         <i class="iconfont" :class="[fileStatus]">&#xec7b;</i>
       </div>
-      <div class="item"><img src="../assets/img/safari.png" alt=""></div>
+      <div class="item">
+        <img src="../assets/img/safari.png" alt="">
+        <i class="iconfont" :class="[safariStatus]">&#xec7b;</i>
+      </div>
       <div class="item"><img src="../assets/img/photo.png" alt=""></div>
       <div class="item"><img src="../assets/img/note.png" alt=""></div>
       <div class="item"><img src="../assets/img/terminal.png" alt=""></div>
@@ -68,15 +71,17 @@ export default {
     }
   },
   computed: {
+    fileShow() {
+      return 'file' in this.$store.state.windowsCount ? this.$store.state.windowsCount['file'] : 0;
+    },
     folderStatus() {
       return 'folder' in this.$store.state.dockStatus ? this.$store.state.dockStatus['folder'] : 'close';
     },
-    fileShow() {
-      console.log(this.$store.state.windowsCount['file']);
-      return 'file' in this.$store.state.windowsCount ? this.$store.state.windowsCount['file'] : 0;
-    },
     fileStatus() {
       return 'file' in this.$store.state.dockStatus ? this.$store.state.dockStatus['file'] : 'close';
+    },
+    safariStatus() {
+      return 'web' in this.$store.state.dockStatus ? this.$store.state.dockStatus['file'] : 'close';
     },
   }
 }
